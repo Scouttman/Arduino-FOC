@@ -103,6 +103,7 @@ void loop() {
 #include "sensors/MagneticSensorI2C.h"
 #include "sensors/MagneticSensorAnalog.h"
 #include "sensors/HallSensor.h"
+#include "sensors/CurrentSensor.h"
 #include "drivers/BLDCDriver3PWM.h"
 #include "drivers/BLDCDriver6PWM.h"
 #include "drivers/BLDCDriver6PWMTmp.h"
