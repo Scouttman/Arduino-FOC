@@ -125,12 +125,12 @@ void _writeDutyCycle6PWMtmp(float dc_a,  float dc_b, float dc_c);
 void MX_GPIO_Init(void);
 void MX_DMA_Init(void);
 void MX_TIM1_Init(TIM_HandleTypeDef* htim1);
-void MX_ADC1_Init(void);
+void MX_ADC1_Init(ADC_HandleTypeDef* hadc1);
 void MX_OPAMP3_Init(void);
 void MX_DAC3_Init(void);
 void MX_USART2_UART_Init(void);
 void MX_OPAMP1_Init(void);
-void MX_ADC2_Init(void);
+void MX_ADC2_Init(ADC_HandleTypeDef* hadc2);
 void MX_OPAMP2_Init(void);
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef* htim);
 
