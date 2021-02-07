@@ -11,11 +11,8 @@
 #define LED1_GPIO_Port GPIOC
 
 
-// static DMA_HandleTypeDef* hdma_adc_m1;
-// static DMA_HandleTypeDef* hdma_adc_m2;
-
-static DMA_HandleTypeDef hdma_adc1;
-static DMA_HandleTypeDef hdma_adc2;
+// static DMA_HandleTypeDef hdma_adc1;
+// static DMA_HandleTypeDef hdma_adc2;
 
 // From STM32 cube IDE
 // TODO remove and replace/create functions
@@ -35,13 +32,6 @@ static DMA_HandleTypeDef hdma_adc2;
   */
 
 
-/*
-*terrible function for config
-*/
-// void SET_HDMA(DMA_HandleTypeDef* _hdma_adc_m1, DMA_HandleTypeDef* _hdma_adc_m2){
-//   hdma_adc_m1 = _hdma_adc_m1;
-//   hdma_adc_m2 = _hdma_adc_m2;
-// }
 /**
   * @brief GPIO Initialization Function
   * @param None
@@ -179,7 +169,7 @@ void  MX_ADC1_Init(ADC_HandleTypeDef* hadc1)
   * @param None
   * @retval None
   */
-void  MX_ADC2_Init(ADC_HandleTypeDef* hadc2)
+void MX_ADC2_Init(ADC_HandleTypeDef* hadc2)
 {
 
   /* USER CODE BEGIN ADC2_Init 0 */
@@ -279,7 +269,9 @@ void  MX_OPAMP2_Init(OPAMP_HandleTypeDef* hopamp)
 
   /* USER CODE BEGIN OPAMP2_Init 1 */
 
-  /* USER CODE END OPAMP2_Init 1 */TIM_HandleTypeDef*SPEED;
+  /* USER CODE END OPAMP2_Init 1 */
+  hopamp->Instance = OPAMP2;
+  hopamp->Init.PowerMode = OPAMP_POWERMODE_HIGHSPEED;
   hopamp->Init.Mode = OPAMP_PGA_MODE;
   hopamp->Init.NonInvertingInput = OPAMP_NONINVERTINGINPUT_IO0;
   hopamp->Init.InternalOutput = DISABLE;
