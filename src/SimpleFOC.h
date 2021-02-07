@@ -106,7 +106,6 @@ void loop() {
 #include "sensors/CurrentSensor.h"
 #include "drivers/BLDCDriver3PWM.h"
 #include "drivers/BLDCDriver6PWM.h"
-#include "drivers/BLDCDriver6PWMTmp.h"
 #include "drivers/StepperDriver4PWM.h"
 #include "drivers/StepperDriver2PWM.h"
 
