@@ -38,6 +38,7 @@ void BLDCMotor::init() {
   if(voltage_sensor_align > voltage_limit) voltage_sensor_align = voltage_limit;
   // update the controller limits
   PID_velocity.limit = voltage_limit;
+  PID_current.limit = voltage_limit;
   P_angle.limit = velocity_limit;
 
   _delay(500);
@@ -86,7 +87,6 @@ int  BLDCMotor::initFOC( float zero_electric_offset, Direction sensor_direction 
     _delay(500);
     }
   if(monitor_port) monitor_port->println("MOT: Motor ready.");
-
   return exit_flag;
 }
 // Encoder alignment to electrical 0 angle
@@ -169,10 +169,14 @@ int BLDCMotor::absoluteZeroAlign() {
 // Iterative function looping FOC algorithm, setting Uq on the Motor
 // The faster it can be run the better
 void BLDCMotor::loopFOC() {
+  // Minimal amount of delay need between reading the angle and setting the phase
   // shaft angle
   shaft_angle = shaftAngle();
+  float elec_angle = _electricalAngle(shaft_angle,pole_pairs);
   // set the phase voltage - FOC heart function :)
-  setPhaseVoltage(voltage_q, voltage_d, _electricalAngle(shaft_angle,pole_pairs));
+  setPhaseVoltage(voltage_q, voltage_d, elec_angle);
+  // update current
+  currentSensor->updateCurrent(elec_angle);
 }
 
 // Iterative function running outer loop of the FOC algorithm
@@ -214,6 +218,11 @@ void BLDCMotor::move(float new_target) {
       // loopFOC should not be called
       shaft_angle_sp = target;
       angleOpenloop(shaft_angle_sp);
+      break;
+    case ControlType::current:
+      // curent control
+      current_sp = target;
+      voltage_q = currentControl(current_sp);
       break;
   }
 }
@@ -418,4 +427,9 @@ void BLDCMotor::angleOpenloop(float target_angle){
 
   // save timestamp for next call
   open_loop_timestamp = now_us;
+}
+
+float BLDCMotor::currentControl(float current_sp){
+  float current = currentSensor->get_d();
+  return PID_current(current_sp - current);
 }

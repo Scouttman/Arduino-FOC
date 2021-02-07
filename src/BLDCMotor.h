@@ -103,6 +103,9 @@ class BLDCMotor: public FOCMotor
     void angleOpenloop(float target_angle);
     // open loop variables
     long open_loop_timestamp;
+
+    // Current control
+    float currentControl(float current_sp);
 };
 
 

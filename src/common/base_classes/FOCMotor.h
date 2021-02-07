@@ -3,6 +3,7 @@
 
 #include "Arduino.h"
 #include "Sensor.h"
+#include "../../sensors/CurrentSensor.h"
 #include "BLDCDriver.h"
 
 #include "../time_utils.h"
@@ -20,7 +21,8 @@ enum ControlType{
   velocity,//!< Velocity motion control
   angle,//!< Position/angle motion control
   velocity_openloop,
-  angle_openloop
+  angle_openloop,
+  current
 };
 
 /**
@@ -57,6 +59,13 @@ class FOCMotor
      * @param sensor Sensor class  wrapper for the FOC algorihtm to read the motor angle and velocity
      */
     void linkSensor(Sensor* sensor);
+
+    /**
+     * Function link a motor and a current sensor
+     * 
+     * @param current_sensor Current_Sensor class wrapper for the FOC algorithm to read the current and phase
+     */
+    void linkCurrentSensor(CurrentSensor* _current_sensor);
 
 
     /**
@@ -102,6 +111,7 @@ class FOCMotor
   	float shaft_velocity;//!< current motor velocity 
     float shaft_velocity_sp;//!< current target velocity
     float shaft_angle_sp;//!< current target angle
+    float current_sp;//!< current target current
     float voltage_q;//!< current voltage u_q set
     float voltage_d;//!< current voltage u_d set
 
@@ -121,6 +131,7 @@ class FOCMotor
     FOCModulationType foc_modulation;//!<  parameter derterniming modulation algorithm
     PIDController PID_velocity{DEF_PID_VEL_P,DEF_PID_VEL_I,DEF_PID_VEL_D,DEF_PID_VEL_U_RAMP,DEF_POWER_SUPPLY};//!< parameter determining the velocity PI configuration
     PIDController P_angle{DEF_P_ANGLE_P,0,0,1e10,DEF_VEL_LIM};	//!< parameter determining the position P configuration 
+    PIDController PID_current{DEF_PID_CUR_P,DEF_PID_CUR_I,DEF_PID_CUR_D,DEF_PID_CUR_U_RAMP,DEF_POWER_SUPPLY};//!< parameter determining the velocity PI configuration
     LowPassFilter LPF_velocity{DEF_VEL_FILTER_Tf};//!<  parameter determining the velocity Lpw pass filter configuration 
 
     /**
@@ -189,6 +200,11 @@ class FOCMotor
       * - HallSensor
     */
     Sensor* sensor; 
+
+    /**
+     * Current Sensor link:
+     */
+    CurrentSensor* currentSensor;
     // monitoring functions
     Print* monitor_port; //!< Serial terminal variable if provided
 };

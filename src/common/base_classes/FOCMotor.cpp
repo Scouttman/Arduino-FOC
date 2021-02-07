@@ -39,6 +39,13 @@ FOCMotor::FOCMotor()
 void FOCMotor::linkSensor(Sensor* _sensor) {
   sensor = _sensor;
 }
+/** 
+  Link the current sensor
+*/
+void FOCMotor::linkCurrentSensor(CurrentSensor* _currentSensor){
+  currentSensor = _currentSensor;
+}
+
 // shaft angle calculation
 float FOCMotor::shaftAngle() {
   // if no sensor linked return 0

@@ -10,6 +10,11 @@
 // angle P params
 #define DEF_P_ANGLE_P 20.0 //!< default P controller P value
 #define DEF_VEL_LIM 20.0 //!< angle velocity limit default
+// velocity PI controller params
+#define DEF_PID_CUR_P 0.5 //!< default PID controller P value
+#define DEF_PID_CUR_I 10.0 //!<  default PID controller I value
+#define DEF_PID_CUR_D 0.0 //!<  default PID controller D value
+#define DEF_PID_CUR_U_RAMP 1000.0 //!< default PID controller voltage ramp value
 // index search 
 #define DEF_INDEX_SEARCH_TARGET_VELOCITY 1.0 //!< default index search velocity
 // align voltage
