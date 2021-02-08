@@ -49,9 +49,9 @@ void CurrentSensor::updateCurrent(float elecAng){
     // memcpy(adcBufferTmp2, adcBuffer2, sizeof(adcBuffer2));
     elecAng = _normalizeAngle(elecAng);
 
-    U_0 = (U_0*63.0+(float)adcBuffer1[2])/64.0; // #TODO replace with LPF
-    V_0 = (V_0*63.0+(float)adcBuffer2[1])/64.0;
-    W_0 = (W_0*63.0+(float)adcBuffer1[3])/64.0;
+    U_0 = LPF_U_0(adcBuffer1[2]);
+    V_0 = LPF_V_0(adcBuffer2[1]);
+    W_0 = LPF_W_0(adcBuffer1[3]);
     //  currentU = convert2current(adcBufferTmp1[0], U_0);
     //  currentV = convert2current(adcBufferTmp2[0], V_0);
     //  currentW = convert2current(adcBufferTmp1[1], W_0);

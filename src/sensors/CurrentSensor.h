@@ -6,6 +6,7 @@
 #define FILTER_LEN 128
 // low pass filter velocity
 #define DEF_CUR_FILTER_Tf 0.005 //!< default velocity filter time constant
+#define DEF_CUR_IDLE_Tf 0.1 //!< default current 0 value filter time constnat
 
 #include "Arduino.h"
 #include "../common/foc_utils.h"
@@ -37,8 +38,11 @@ class CurrentSensor{
     float U_0, V_0, W_0 = 0;
     uint16_t adcBuffer1[ADC_BUF_LEN_1]; // Buffer for store the results of the ADC conversion
     uint16_t adcBuffer2[ADC_BUF_LEN_2]; // Buffer for store the results of the ADC conversion
-    LowPassFilter LPF_d{DEF_CUR_FILTER_Tf};//!<  parameter determining the velocity Lpw pass filter configuration 
-    LowPassFilter LPF_q{DEF_CUR_FILTER_Tf};//!<  parameter determining the velocity Lpw pass filter configuration 
+    LowPassFilter LPF_d{DEF_CUR_FILTER_Tf};//!<  parameter determining the current Lpw pass filter configuration 
+    LowPassFilter LPF_q{DEF_CUR_FILTER_Tf};//!<  parameter determining the current Lpw pass filter configuration 
+    LowPassFilter LPF_U_0{DEF_CUR_IDLE_Tf};//!<  parameter determining the 0 current Lpw pass filter configuration 
+    LowPassFilter LPF_V_0{DEF_CUR_IDLE_Tf};//!<  parameter determining the 0 current Lpw pass filter configuration 
+    LowPassFilter LPF_W_0{DEF_CUR_IDLE_Tf};//!<  parameter determining the 0 current Lpw pass filter configuration 
 };
 
 
