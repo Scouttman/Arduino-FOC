@@ -120,18 +120,4 @@ void _writeDutyCycle4PWM(float dc_1a,  float dc_1b, float dc_2a, float dc_2b, in
  */ 
 void _writeDutyCycle6PWM(float dc_a,  float dc_b, float dc_c, float dead_zone, int pinA_h, int pinA_l, int pinB_h, int pinB_l, int pinC_h, int pinC_l);
 
-void _writeDutyCycle6PWMtmp(float dc_a,  float dc_b, float dc_c);
-
-void MX_GPIO_Init(void);
-void MX_DMA_Init(void);
-void MX_TIM1_Init(TIM_HandleTypeDef* htim1);
-void MX_ADC1_Init(ADC_HandleTypeDef* hadc1);
-void MX_OPAMP3_Init(void);
-void MX_DAC3_Init(void);
-void MX_USART2_UART_Init(void);
-void MX_OPAMP1_Init(void);
-void MX_ADC2_Init(ADC_HandleTypeDef* hadc2);
-void MX_OPAMP2_Init(void);
-void HAL_TIM_MspPostInit(TIM_HandleTypeDef* htim);
-
 #endif
