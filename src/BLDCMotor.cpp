@@ -430,6 +430,8 @@ void BLDCMotor::angleOpenloop(float target_angle){
 }
 
 float BLDCMotor::currentControl(float current_sp){
-  float current = currentSensor->get_d();
+  float d = currentSensor->get_d();
+  float q = currentSensor->get_q();
+  float current = q;//sqrt(pow(d,2)+pow(q,2)); // get the length of the vector
   return PID_current(current_sp - current);
 }
