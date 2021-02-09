@@ -20,13 +20,12 @@
 #elif defined(ESP_H)  // or esp32
   #define _ADC_VOLTAGE 3.3 
   #define _ADC_RESOLUTION 4095.0
-#elif defined(_STM32_DEF_) // or stm32
-  #define _ADC_VOLTAGE 3.3
-  #define _ADC_RESOLUTION 1024.0
 #else
   #define _ADC_VOLTAGE 5.0
   #define _ADC_RESOLUTION 1024.0
 #endif
+
+#ifndef _STM32_DEF_
 
 // adc counts to voltage conversion ratio
 // some optimizing for faster execution
@@ -54,3 +53,5 @@ void _configureADC(const int pinA,const int pinB,const int pinC){
     sbi(ADCSRA, ADPS0);
   #endif
 }
+
+#endif
