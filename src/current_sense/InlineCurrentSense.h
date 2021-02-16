@@ -24,7 +24,7 @@ class InlineCurrentSense: public CurrentSense{
     void init() override;
     PhaseCurrent_s getPhaseCurrents() override;
     float getCurrent( float angle_el  = 0) override;
-
+    DQCurrent_s getFOCCurrents(float angle_el) override;
 
     // ADC measuremnet gain adjustment for each phase
     // if (shunt+amp combination) measures inverse current you can set it to -1 for example
@@ -44,6 +44,9 @@ class InlineCurrentSense: public CurrentSense{
     double shunt_resistor; //!< Shunt resistor value 
     double amp_gain; //!< amp gain value 
     double volts_to_amps_ratio; //!< Volts to amps ratio
+
+    //
+    DQCurrent_s current_dq;
     
     /**
      *  Function finding zero offsets of the ADC

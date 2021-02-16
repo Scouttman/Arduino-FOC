@@ -41,7 +41,7 @@ class CurrentSense{
      * 
      * @param angle_el - motor electrical angle
      */
-    DQCurrent_s getFOCCurrents(float angle_el);
+    virtual DQCurrent_s getFOCCurrents(float angle_el);
 
 };
 

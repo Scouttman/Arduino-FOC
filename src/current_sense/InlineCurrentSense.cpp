@@ -25,9 +25,9 @@ void InlineCurrentSense::init(){
 // Function finding zero offsets of the ADC
 void InlineCurrentSense::calibrateOffsets(){
     // find adc offset = zero current voltage
-    offset_ia =0;
-    offset_ib= 0;
-    offset_ic= 0;
+    offset_ia = 0;
+    offset_ib = 0;
+    offset_ic = 0;
     // read the adc voltage 500 times ( arbitrary number )
     for (int i = 0; i < 500; i++) {
         offset_ia += _readADCVoltage(pinA);
@@ -65,8 +65,9 @@ float InlineCurrentSense::getCurrent(float motor_electrical_angle){
         i_alpha = current.a;  
         i_beta = _1_SQRT3 * current.a + _2_SQRT3 * current.b;
     }else{
-        i_alpha = 2*(current.a - (current.b - current.c))/3.0;    
-        i_beta = _2_SQRT3 *( current.b  - current.c );
+        i_alpha = (2*current.a - current.b - current.c)/3.0;  // nor sure about htis one
+        // i_alpha = (2.0/3.0)*(2.0*current.a-current.b-current.c);   
+        i_beta = _SQRT3 *( current.b  - current.c );
     }
 
     // if motor angle provided function returns signed value of the current
@@ -76,4 +77,23 @@ float InlineCurrentSense::getCurrent(float motor_electrical_angle){
         sign = (i_beta * _cos(motor_electrical_angle) - i_alpha*_sin(motor_electrical_angle)) > 0 ? 1 : -1;  
     // return current magnitude
     return sign*_sqrt(i_alpha*i_alpha + i_beta*i_beta);
+}
+
+
+// From mit mini cheeta
+DQCurrent_s InlineCurrentSense::getFOCCurrents(float motor_electrical_angle){
+  // read current phase currents
+  PhaseCurrent_s current = getPhaseCurrents();
+  /// DQ0 Transform ///
+  ///Phase current amplitude = lengh of dq vector///
+  ///i.e. iq = 1, id = 0, peak phase current of 1///
+  
+  float cf = _cos(motor_electrical_angle);
+  float sf = _sin(motor_electrical_angle);
+
+  DQCurrent_s current_dq_read;
+  current_dq_read.d = 0.6666667*(cf*current.a + (_SQRT3_2*sf-.5f*cf)*current.b + (-_SQRT3_2*sf-.5f*cf)*current.c);   ///Faster DQ0 Transform
+  current_dq_read.q = 0.6666667*(-sf*current.a - (-_SQRT3_2*cf-.5f*sf)*current.b - (_SQRT3_2*cf-.5f*sf)*current.c); 
+  // current_dq      
+  return current_dq_read;
 }
