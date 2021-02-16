@@ -24,10 +24,12 @@ uint16_t adcBuffer2[ADC_BUF_LEN_2]; // Buffer for store the results of the ADC c
 // function reading an ADC value and returning the read voltage
 float _readADCVoltage(const int pin){
   uint32_t raw_adc =0;
-  if(pin == 1)
-    raw_adc = adcBuffer2[0];
-  else
-    raw_adc = adcBuffer1[pin*2];
+  if(pin == 0)
+    raw_adc = adcBuffer1[0];
+  else if(pin == 1)
+    raw_adc = adcBuffer2[1];
+  else if(pin == 2)
+    raw_adc = adcBuffer1[1];
   
   return raw_adc * _ADC_CONV;
 }
