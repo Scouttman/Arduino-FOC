@@ -113,7 +113,7 @@ void  MX_ADC1_Init(ADC_HandleTypeDef* hadc1)
   /** Common config 
   */
   hadc1->Instance = ADC1;
-  hadc1->Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV32;
+  hadc1->Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV16;
   hadc1->Init.Resolution = ADC_RESOLUTION_12B;
   hadc1->Init.DataAlign = ADC_DATAALIGN_RIGHT;
   hadc1->Init.GainCompensation = 0;
@@ -143,7 +143,7 @@ void  MX_ADC1_Init(ADC_HandleTypeDef* hadc1)
   */
   sConfig.Channel = ADC_CHANNEL_12;
   sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
+  sConfig.SamplingTime = ADC_SAMPLETIME_12CYCLES_5; //ADC_SAMPLETIME_2CYCLES_5;
   sConfig.SingleDiff = ADC_SINGLE_ENDED;
   sConfig.OffsetNumber = ADC_OFFSET_NONE;
   sConfig.Offset = 0;
@@ -185,7 +185,7 @@ void MX_ADC2_Init(ADC_HandleTypeDef* hadc2)
   /** Common config 
   */
   hadc2->Instance = ADC2;
-  hadc2->Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV32;
+  hadc2->Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV16;
   hadc2->Init.Resolution = ADC_RESOLUTION_12B;
   hadc2->Init.DataAlign = ADC_DATAALIGN_RIGHT;
   hadc2->Init.GainCompensation = 0;
@@ -208,7 +208,7 @@ void MX_ADC2_Init(ADC_HandleTypeDef* hadc2)
   */
   sConfig.Channel = ADC_CHANNEL_3;
   sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
+  sConfig.SamplingTime = ADC_SAMPLETIME_12CYCLES_5; //ADC_SAMPLETIME_2CYCLES_5
   sConfig.SingleDiff = ADC_SINGLE_ENDED;
   sConfig.OffsetNumber = ADC_OFFSET_NONE;
   sConfig.Offset = 0;
