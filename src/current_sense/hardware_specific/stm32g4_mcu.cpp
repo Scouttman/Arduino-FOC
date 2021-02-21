@@ -1,7 +1,7 @@
 #include "../hardware_api.h"
 #include "stm32g4_hal.h"
 
-
+#define _STM32_DEF_ //TODO Remove
 #if defined(_STM32_DEF_) // or stm32
 #define _ADC_VOLTAGE 3.3
 #define _ADC_RESOLUTION 4096.0
@@ -34,6 +34,30 @@ float _readADCVoltage(const int pin){
   return raw_adc * _ADC_CONV;
 }
 
+void _configureOPAMP(OPAMP_HandleTypeDef *hopamp, OPAMP_TypeDef *OPAMPx_Def){
+  // could this be replaced with LL_OPAMP calls??
+  hopamp->Instance = OPAMPx_Def;
+  hopamp->Init.PowerMode = OPAMP_POWERMODE_HIGHSPEED;
+  hopamp->Init.Mode = OPAMP_PGA_MODE;
+  hopamp->Init.NonInvertingInput = OPAMP_NONINVERTINGINPUT_IO0;
+  hopamp->Init.InternalOutput = DISABLE;
+  hopamp->Init.TimerControlledMuxmode = OPAMP_TIMERCONTROLLEDMUXMODE_DISABLE;
+  hopamp->Init.PgaConnect = OPAMP_PGA_CONNECT_INVERTINGINPUT_IO0_BIAS;
+  hopamp->Init.PgaGain = OPAMP_PGA_GAIN_16_OR_MINUS_15;
+  hopamp->Init.UserTrimming = OPAMP_TRIMMING_FACTORY;
+  if (HAL_OPAMP_Init(hopamp) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
+void _configureOPAMPs(OPAMP_HandleTypeDef *OPAMPA, OPAMP_HandleTypeDef *OPAMPB, OPAMP_HandleTypeDef *OPAMPC){
+  // Configure the opamps
+  _configureOPAMP(OPAMPA, OPAMP1);
+  _configureOPAMP(OPAMPB, OPAMP2);
+  _configureOPAMP(OPAMPC, OPAMP3);
+}
+
+
 
 // function reading an ADC value and returning the read voltage
 void _configureADC(const int pinA,const int pinB,const int pinC){
@@ -42,9 +66,7 @@ void _configureADC(const int pinA,const int pinB,const int pinC){
   MX_DMA_Init(); 
   MX_ADC1_Init(&hadc1);
   MX_ADC2_Init(&hadc2);
-  MX_OPAMP1_Init(&hopamp1);
-  MX_OPAMP2_Init(&hopamp2);
-  MX_OPAMP3_Init(&hopamp3);
+  _configureOPAMPs(&hopamp1, &hopamp3, &hopamp2);
   HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adcBuffer1, ADC_BUF_LEN_1);
   HAL_ADC_Start_DMA(&hadc2, (uint32_t*)adcBuffer2, ADC_BUF_LEN_2);
   HAL_OPAMP_Start(&hopamp1);
