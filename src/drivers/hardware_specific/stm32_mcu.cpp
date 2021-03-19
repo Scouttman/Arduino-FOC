@@ -1,6 +1,7 @@
 
 #include "../hardware_api.h"
 
+#define _STM32_DEF_
 #if defined(_STM32_DEF_)
 // default pwm parameters
 #define _PWM_RESOLUTION 12 // 12bit
@@ -154,15 +155,7 @@ HardwareTimer* _initHardware6PWMInterface(uint32_t PWM_freq, float dead_zone, in
   LL_TIM_CC_EnableChannel(HT->getHandle()->Instance, LL_TIM_CHANNEL_CH1 | LL_TIM_CHANNEL_CH1N | LL_TIM_CHANNEL_CH2 | LL_TIM_CHANNEL_CH2N | LL_TIM_CHANNEL_CH3 | LL_TIM_CHANNEL_CH3N);
 
   // Set Trigger out for DMA transfer
-  // LL_TIM_SetTriggerOutput(HT->getHandle()->Instance, LL_TIM_TRGO_UPDATE); // could be replaced by this ??
-  TIM_MasterConfigTypeDef sMasterConfig = {0};
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
-  sMasterConfig.MasterOutputTrigger2 = TIM_TRGO2_RESET;
-  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(HT->getHandle(), &sMasterConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
+  LL_TIM_SetTriggerOutput(HT->getHandle()->Instance, LL_TIM_TRGO_UPDATE);
 
   HT->pause();
   HT->refresh();
