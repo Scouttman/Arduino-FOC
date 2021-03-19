@@ -19,6 +19,7 @@ enum MotionControlType{
   torque,//!< Torque control
   velocity,//!< Velocity motion control
   angle,//!< Position/angle motion control
+  spring_mass_damper,//!< Spring Mas Damper System
   velocity_openloop,
   angle_openloop
 };
