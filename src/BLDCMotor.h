@@ -68,7 +68,11 @@ class BLDCMotor: public FOCMotor
     
     float Ua, Ub, Uc;//!< Current phase voltages Ua,Ub and Uc set to motor
     float	Ualpha, Ubeta; //!< Phase voltages U alpha and U beta used for inverse Park and Clarke transform
+    /** return the current current in DQ */
+    DQCurrent_s getCurrents();
 
+    /** enable current sensing. hack to get be able to calling the current sensor outside of current control loop #TODO remove  */
+    void enable_current_sense();
 
   private:
     // FOC methods 
@@ -104,6 +108,11 @@ class BLDCMotor: public FOCMotor
     void angleOpenloop(float target_angle);
     // open loop variables
     long open_loop_timestamp;
+
+    // Debug functions and variables #TODO remove
+    int counter_tmp = 0;
+    cur_enable = false;
+    void write_float_tmp(float val);
 };
 
 

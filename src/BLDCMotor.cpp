@@ -133,7 +133,7 @@ int BLDCMotor::alignSensor() {
     if(monitor_port) monitor_port->println(F("MOT: natural_direction==CW"));
   }
 
-  // let the motor stabilize for1 sec
+  // // let the motor stabilize for1 sec
   _delay(1000);
   // set sensor to zero
   sensor->initRelativeZero();
@@ -158,7 +158,7 @@ int BLDCMotor::alignSensor() {
 int BLDCMotor::absoluteZeroAlign() {
 
   if(monitor_port) monitor_port->println(F("MOT: Absolute zero align."));
-    // if no absolute zero return
+  // if no absolute zero return
   if(!sensor->hasAbsoluteZero()) return 0;
 
 
@@ -166,7 +166,7 @@ int BLDCMotor::absoluteZeroAlign() {
   // search the absolute zero with small velocity
   while(sensor->needsAbsoluteZeroSearch() && shaft_angle < _2PI){
     loopFOC();
-    voltage.q = PID_velocity(velocity_index_search - shaftVelocity());
+    voltage.q = 1; //-0.01*(velocity_index_search - shaftVelocity()); #TODO return to default
   }
   voltage.q = 0;
   // disable motor
@@ -192,6 +192,15 @@ void BLDCMotor::loopFOC() {
   // shaft angle
   shaft_angle = shaftAngle();
   electrical_angle = _normalizeAngle(_electricalAngle(shaft_angle,pole_pairs) + zero_electric_angle);
+  // read dq currents
+  if(cur_enable){
+    current = current_sense->getFOCCurrents(electrical_angle);
+    // filter values
+    current.q = LPF_current_q(current.q);
+    current.d = LPF_current_d(current.d);
+  }
+  float tmp = 0;
+  counter_tmp++;
 
   switch (torque_controller) {
     case TorqueControlType::voltage:
@@ -207,14 +216,23 @@ void BLDCMotor::loopFOC() {
       voltage.d = 0;
       break;
     case TorqueControlType::foc_current:
-      // read dq currents
-      current = current_sense->getFOCCurrents(electrical_angle);
-      // filter values
-      current.q = LPF_current_q(current.q);
-      current.d = LPF_current_d(current.d);
       // calculate the phase voltages
       voltage.q = PID_current_q(current_sp - current.q); 
-      voltage.d = PID_current_d(-current.d);
+      voltage.d = PID_current_d(-current.d); // not sure if this is working
+      if(counter_tmp%100 == 0){
+        // monitor_port->print(F("sp:"));
+        // monitor_port->println(current_sp);
+        // monitor_port->print(F("cu:"));
+        // monitor_port->println(current.q);
+        // // monitor_port->print(F("cu:"));
+        // // monitor_port->println((current_sp-current.q)*10000,5);
+        // monitor_port->print(F("ou:"));
+        // monitor_port->println(voltage.q,5);
+        // write_float_tmp(current_sp);
+        // write_float_tmp(current.q);
+        // write_float_tmp(voltage.q);
+        // monitor_port->println();
+      }
       break;
     
     default:
@@ -239,6 +257,10 @@ void BLDCMotor::move(float new_target) {
   if( new_target != NOT_SET ) target = new_target;
   // get angular velocity
   shaft_velocity = shaftVelocity();
+  float spring_k = 0.1;
+  float spring_c = 0;//0.01; //0.001;
+  float torque2current = 0.5;
+  float force = 0;
 
   switch (controller) {
     case MotionControlType::torque:
@@ -267,9 +289,32 @@ void BLDCMotor::move(float new_target) {
       if(torque_controller == TorqueControlType::voltage){
         voltage.q = PID_velocity(shaft_velocity_sp - shaft_velocity); // if voltage torque control
         voltage.d = 0;
+        if(counter_tmp%100 == 0){
+          write_float_tmp(shaft_velocity_sp);
+          write_float_tmp(shaft_velocity);
+          write_float_tmp(voltage.q);
+          monitor_port->println();
+        }
       }else{
         current_sp = PID_velocity(shaft_velocity_sp - shaft_velocity); // if current/foc_current torque control
+        if(counter_tmp%100 == 0){
+          write_float_tmp(shaft_velocity_sp);
+          write_float_tmp(shaft_velocity);
+          write_float_tmp(current_sp);
+          monitor_port->println();
+        }
       }
+      break;
+    case MotionControlType::spring_mass_damper:
+      force = spring_k*(shaft_angle_sp - shaft_angle) - spring_c*shaft_velocity;
+      current_sp = torque2current*force;
+      if(counter_tmp%100 == 0){
+        write_float_tmp(force);
+        write_float_tmp(spring_k*(shaft_angle_sp - shaft_angle));
+        write_float_tmp(spring_c*shaft_velocity);
+        monitor_port->println();
+      }
+      
       break;
     case MotionControlType::velocity_openloop:
       // velocity control in open loop
@@ -521,4 +566,20 @@ void BLDCMotor::angleOpenloop(float target_angle){
 
   // save timestamp for next call
   open_loop_timestamp = now_us;
+}
+
+void BLDCMotor::write_float_tmp(float val){
+   byte * b = (byte *) &val;
+   monitor_port->write(b[3]);
+   monitor_port->write(b[2]);
+   monitor_port->write(b[1]);
+   monitor_port->write(b[0]);
+}
+
+void BLDC::enable_current_sense(){
+  cur_enable = true;
+}
+
+DQCurrent_s BLDCMotor::getCurrents(){
+  return current;
 }
