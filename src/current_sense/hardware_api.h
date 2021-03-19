@@ -20,4 +20,12 @@ float _readADCVoltage(const int pinA);
  */
 void _configureADC(const int pinA,const int pinB,const int pinC = NOT_SET);
 
+//TODO move function header
+/**
+ * function to configure the opamps 
+ */
+// void _configureOPAMPs(OPAMP_HandleTypeDef *OPAMPA, OPAMP_HandleTypeDef *OPAMPB, OPAMP_HandleTypeDef *OPAMPC);
+
+// void _configureOPAMP(OPAMP_HandleTypeDef *OPAMPx, OPAMP_TypeDef *OPAMPx_Def);
+
 #endif
