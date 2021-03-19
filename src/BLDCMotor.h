@@ -111,7 +111,7 @@ class BLDCMotor: public FOCMotor
 
     // Debug functions and variables #TODO remove
     int counter_tmp = 0;
-    cur_enable = false;
+    bool cur_enable = false;
     void write_float_tmp(float val);
 };
 

@@ -576,7 +576,7 @@ void BLDCMotor::write_float_tmp(float val){
    monitor_port->write(b[0]);
 }
 
-void BLDC::enable_current_sense(){
+void BLDCMotor::enable_current_sense(){
   cur_enable = true;
 }
 
