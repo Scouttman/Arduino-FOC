@@ -22,6 +22,8 @@ uint16_t adcBuffer2[ADC_BUF_LEN_2]; // Buffer for store the results of the ADC c
 #define _ADC_CONV ( (_ADC_VOLTAGE) / (_ADC_RESOLUTION) )
 
 // function reading an ADC value and returning the read voltage
+// As DMA is being used just return the DMA result
+// The DMA of adcBuffer1[2,3] and adcBuffer1[0] are the off duty cycle
 float _readADCVoltage(const int pin){
   uint32_t raw_adc =0;
   if(pin == 0)
