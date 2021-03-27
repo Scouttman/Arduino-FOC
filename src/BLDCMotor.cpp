@@ -40,8 +40,8 @@ void BLDCMotor::init() {
   // update the controller limits
   if(current_sense){
     // current control loop controls voltage
-    PID_current_q.limit = voltage_limit;
-    PID_current_d.limit = voltage_limit;
+    PID_current_q.limit = current_limit;
+    PID_current_d.limit = current_limit;
     // velocity control loop controls current
     PID_velocity.limit = current_limit;
   }else{
@@ -183,6 +183,14 @@ int BLDCMotor::absoluteZeroAlign() {
   return !sensor->needsAbsoluteZeroSearch() ? 1 : -1;
 }
 
+void BLDCMotor::setController(float _kp, float _kd, float _t_ff, float _shaft_angle_sp, float _shaft_velocity_sp){
+  kp = _kp;
+  kd = _kd;
+  t_ff = _t_ff;
+  shaft_angle_sp = _shaft_angle_sp;
+  shaft_velocity_sp = _shaft_velocity_sp;
+}
+
 // Iterative function looping FOC algorithm, setting Uq on the Motor
 // The faster it can be run the better
 void BLDCMotor::loopFOC() {
@@ -217,6 +225,9 @@ void BLDCMotor::loopFOC() {
       break;
     case TorqueControlType::foc_current:
       // calculate the phase voltages
+      if(current_sp > current_limit){
+        current_sp = 0;
+      }
       voltage.q = PID_current_q(current_sp - current.q); 
       voltage.d = PID_current_d(-current.d); // not sure if this is working
       if(counter_tmp%100 == 0){
@@ -228,10 +239,10 @@ void BLDCMotor::loopFOC() {
         // // monitor_port->println((current_sp-current.q)*10000,5);
         // monitor_port->print(F("ou:"));
         // monitor_port->println(voltage.q,5);
-        // write_float_tmp(current_sp);
-        // write_float_tmp(current.q);
-        // write_float_tmp(voltage.q);
-        // monitor_port->println();
+        write_float_tmp(current_sp);
+        write_float_tmp(current.q);
+        write_float_tmp(voltage.q);
+        monitor_port->println();
       }
       break;
     
@@ -261,6 +272,7 @@ void BLDCMotor::move(float new_target) {
   float spring_c = 0;//0.01; //0.001;
   float torque2current = 0.5;
   float force = 0;
+  float torque_sp = 0;
 
   switch (controller) {
     case MotionControlType::torque:
@@ -306,16 +318,26 @@ void BLDCMotor::move(float new_target) {
       }
       break;
     case MotionControlType::spring_mass_damper:
-      force = spring_k*(shaft_angle_sp - shaft_angle) - spring_c*shaft_velocity;
+      force = spring_k*(shaft_angle_sp - shaft_angle) - spring_c*shaft_velocity; // spring and damper coefficient 
       current_sp = torque2current*force;
       if(counter_tmp%100 == 0){
         write_float_tmp(force);
-        write_float_tmp(spring_k*(shaft_angle_sp - shaft_angle));
-        write_float_tmp(spring_c*shaft_velocity);
+        write_float_tmp(spring_k*(shaft_angle_sp - shaft_angle)); 
+        write_float_tmp(spring_c*shaft_velocity); //damping coefficient
         monitor_port->println();
       }
       
       break;
+    case MotionControlType::torque_piecewise:
+      // controller->kp*(controller->p_des - controller->theta_mech) + controller->t_ff + controller->kd*(controller->v_des - controller->dtheta_mech);
+      torque_sp =  kp*(shaft_angle_sp - shaft_angle) - kd*(shaft_velocity_sp-shaft_velocity)+t_ff;
+      current_sp =  torque2current*torque_sp;
+      if(counter_tmp%100 == 0){
+        // write_float_tmp(shaft_angle_sp);
+        // write_float_tmp(shaft_angle);
+        // write_float_tmp(current_sp);
+        // monitor_port->println();
+      }
     case MotionControlType::velocity_openloop:
       // velocity control in open loop
       // loopFOC should not be called

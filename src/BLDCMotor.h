@@ -71,6 +71,10 @@ class BLDCMotor: public FOCMotor
     /** return the current current in DQ */
     DQCurrent_s getCurrents();
 
+    float kp, kd, t_ff;
+    /** Set controler values**/
+    void setController(float _kp, float _kd, float _t_ff, float _shaft_angle_sp, float _shaft_velocity_sp);
+
     /** enable current sensing. hack to get be able to calling the current sensor outside of current control loop #TODO remove  */
     void enable_current_sense();
 
